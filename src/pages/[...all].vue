@@ -3,9 +3,11 @@ import 'vue-good-table-next/dist/vue-good-table-next.css'
 
 import { VueGoodTable } from 'vue-good-table-next'
 import { ref } from 'vue'
+import type { ReceivedStatusUpdate } from 'webxdc'
 import { stump_data } from '~/stump'
+import { toggleDark } from '~/composables/dark'
 
-const columns = ref([
+const columns = [
   {
     label: 'Timestamp',
     field: 'ts',
@@ -32,10 +34,22 @@ const columns = ref([
     type: 'number',
     sortable: false,
   },
-])
+]
 
-const dev = true
 const data = ref([] as usedData[])
+
+//https://borisflesch.github.io/vue-good-table-next/guide/configuration/pagination-options.html
+const pagination_options = {
+  enabled: true,
+  perPage: 20,
+  perPageDropdown: [20, 40, 60, 150],
+}
+
+// restore old logs from cache
+const cached_data = localStorage.getItem('log_data')
+if (cached_data) {
+  data.value = JSON.parse(cached_data)
+}
 
 const options = {
   enabled: true,
@@ -43,12 +57,10 @@ const options = {
 }
 
 interface LogData {
-  payload: {
-    data1: any
-    data2: any
-    event_type: any
-    ts: Number
-  }
+  data1: any
+  data2: any
+  event_type: any
+  ts: Number
 }
 
 interface usedData {
@@ -58,35 +70,47 @@ interface usedData {
   ts: Number
 }
 
-function receiveUpdate(log_data: LogData) {
-  // eslint-disable-next-line no-console
-  console.log('new logs received')
-  data.value.push(transformData(log_data))
+function receiveUpdate(log_data: ReceivedStatusUpdate<LogData>) {
+  // insert newest log at the beginning of the list
+  data.value.splice(0, 0, log_data.payload)
+  localStorage.setItem('lastSerial', log_data.serial.toString())
 }
 
-function transformData(log_data: LogData) {
-  return log_data.payload
-}
+window.addEventListener('unload', () => {
+  console.log('saving data to local storage')
+  localStorage.setItem('log_data', JSON.stringify(data.value))
+})
+
 
 onMounted(() => {
-  window.webxdc.setUpdateListener(receiveUpdate, 0)
+  if (!localStorage.getItem('lastSerial'))
+    localStorage.setItem('lastSerial', '0')
 
+  window.webxdc.setUpdateListener(receiveUpdate, parseInt(localStorage.getItem('lastSerial')!))
+
+  // add stump data in dev
   if (import.meta.env.DEV) {
-    stump_data.forEach((row) => {
-      data.value.push(transformData(row))
-    })
+    for (let i = 0; i < 5; i++) {
+      stump_data.forEach((row) => {
+        data.value.push(row.payload)
+      })
+    }
   }
 })
 </script>
 
 <template lang="pug">
 div
-  h1.text-2xl.leading-none.mb-1 Current device logs
+  div.flex.justify-between
+    h1.text-2xl.leading-none.mb-1 Current device logs
+    button(@click="() => toggleDark()" key="2")
+          div(i="carbon-sun dark:carbon-moon")
   div
     VueGoodTable(
       :columns="columns"
       :rows="data"
       :search-options = "options"
+      :pagination-options = "pagination_options"
       compactMode
     )
 </template>
