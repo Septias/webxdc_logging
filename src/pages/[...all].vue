@@ -131,4 +131,22 @@ thead
 
 .magnifying-glass
   display: none !important
+
+.dark body 
+  background: var(--dark-bg) !important
+
+.dark .vgt-table tbody 
+  background: var(--dark-bg) !important
+
+
+.dark table.vgt-table td 
+  color: white !important
+
+
+.dark .vgt-global-search 
+  background:none
+
+.vgt-wrap__footer 
+  padding: 0px !important
+
 </style>
