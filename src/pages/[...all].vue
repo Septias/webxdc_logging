@@ -51,7 +51,7 @@ onMounted(() => {
 
   // add stump data in dev
   if (import.meta.env.DEV) {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 1000; i++) {
       stump_data.forEach((row) => {
         data.value.push(row.payload)
       })
@@ -93,7 +93,7 @@ div
   color: white !important
 
 .dark .vgt-global-search 
-  background:none
+  background: none
 
 .vgt-wrap__footer 
   padding: 0px !important
