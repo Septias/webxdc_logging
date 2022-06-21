@@ -26,6 +26,7 @@ specifiers:
   vue-good-table-next: ^0.1.0
   vue-router: ^4.0.14
   vue-tsc: ^0.34.11
+  vue3-virtual-list: ^1.0.2
 
 dependencies:
   '@vueuse/core': 8.3.1_vue@3.2.33
@@ -34,6 +35,7 @@ dependencies:
   vue: 3.2.33
   vue-good-table-next: 0.1.0
   vue-router: 4.0.14_vue@3.2.33
+  vue3-virtual-list: 1.0.2_vue@3.2.33
 
 devDependencies:
   '@antfu/eslint-config': 0.22.0_eslint@8.14.0+typescript@4.6.4
@@ -3994,6 +3996,14 @@ packages:
       '@vue/runtime-dom': 3.2.33
       '@vue/server-renderer': 3.2.33_vue@3.2.33
       '@vue/shared': 3.2.33
+    dev: false
+
+  /vue3-virtual-list/1.0.2_vue@3.2.33:
+    resolution: {integrity: sha512-WzJPe785hQqAWwVWsRoxUuZ0cLrI8rdQHjthE3a4Izl3l6YcgSELpjKKhhq/C1dXS1QfakjQON7Z4wb387yDhw==}
+    peerDependencies:
+      vue: ^3.0.0
+    dependencies:
+      vue: 3.2.33
     dev: false
 
   /w3c-hr-time/1.0.2:
