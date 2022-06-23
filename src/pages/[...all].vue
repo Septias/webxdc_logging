@@ -8,7 +8,7 @@ import { toggleDark } from '~/composables/dark'
 import { VirtualList } from 'vue3-virtual-list';
 import tableRow from '~/components/tableRow.vue'
 
-const data = ref([] as usedData[])
+const data = ref([] as LogData[])
 
 // restore old logs from cache
 const cached_data = localStorage.getItem('log_data')
@@ -32,22 +32,20 @@ interface usedData {
 }
 
 function receiveUpdate(log_data: ReceivedStatusUpdate<LogData>) {
-  // insert newest log at the beginning of the list
-  data.value.splice(0, 0, log_data.payload)
-  localStorage.setItem('lastSerial', log_data.serial.toString())
+  data.value.push(log_data.payload)
 }
+
+const reversed = computed(() => data.value.reverse())
 
 window.addEventListener('unload', () => {
   console.log('saving data to local storage')
-  localStorage.setItem('log_data', JSON.stringify(data.value))
 })
 
+const height = ref(0)
+const hi = ref( null as unknown as HTMLElement)
 
 onMounted(() => {
-  if (!localStorage.getItem('lastSerial'))
-    localStorage.setItem('lastSerial', '0')
-
-  window.webxdc.setUpdateListener(receiveUpdate, parseInt(localStorage.getItem('lastSerial')!))
+  window.webxdc.setUpdateListener(receiveUpdate, 0)
 
   // add stump data in dev
   if (import.meta.env.DEV) {
@@ -57,20 +55,24 @@ onMounted(() => {
       })
     }
   }
+
+  height.value = window.innerHeight - hi.value.scrollHeight
 })
+
 </script>
 
 <template lang="pug">
-div
-  div.flex.justify-between
+div.h-screen.overflow-hidden
+  div.flex.justify-between(ref="hi")
     h1.text-2xl.leading-none.mb-1 Current device logs
     button(@click="() => toggleDark()" key="2")
-          div(i="carbon-sun dark:carbon-moon")
+      div(i="carbon-sun dark:carbon-moon")
   
-  table
-    VirtualList( :data="data")
+  table.items-wrapper(:style="{height: height+ 'px'}")
+    VirtualList(:data="data")
       template(v-slot="{item, index}")
-        tr
+        tr 
+          td {{index}}
           td {{item.ts}}
           td {{item.event_type}}
           td {{item.data1}}
@@ -85,17 +87,13 @@ div
 .dark body 
   background: var(--dark-bg) !important
 
-.dark .vgt-table tbody 
-  background: var(--dark-bg) !important
+.items-wrapper
+  width: 100%
+  height: calc(100% - 70px)
 
-
-.dark table.vgt-table td 
-  color: white !important
-
-.dark .vgt-global-search 
-  background: none
-
-.vgt-wrap__footer 
-  padding: 0px !important
-
+.item-container 
+  height: 40px
+  
+.root
+  max-height: 100vh
 </style>
