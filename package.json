@@ -14,7 +14,6 @@
     "pug": "^3.0.2",
     "sass": "^1.51.0",
     "vue": "^3.2.33",
-    "vue-good-table-next": "^0.1.0",
     "vue-router": "^4.0.14",
     "vue3-virtual-list": "^1.0.2"
   },

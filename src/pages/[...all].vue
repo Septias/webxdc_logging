@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import 'vue-good-table-next/dist/vue-good-table-next.css'
-
 import { ref } from 'vue'
 import type { ReceivedStatusUpdate } from 'webxdc'
 import { stump_data } from '~/stump'
 import { toggleDark } from '~/composables/dark'
 import { VirtualList } from 'vue3-virtual-list';
-import tableRow from '~/components/tableRow.vue'
 
 const data = ref([] as LogData[])
 
@@ -23,19 +20,11 @@ interface LogData {
   ts: Number
 }
 
-
-interface usedData {
-  data1: any
-  data2: any
-  event_type: any
-  ts: Number
-}
-
 function receiveUpdate(log_data: ReceivedStatusUpdate<LogData>) {
   data.value.push(log_data.payload)
 }
 
-const reversed = computed(() => data.value.reverse())
+const reversed = computed(() => data.value.slice().reverse())
 
 window.addEventListener('unload', () => {
   console.log('saving data to local storage')
@@ -68,11 +57,10 @@ div.h-screen.overflow-hidden
     button(@click="() => toggleDark()" key="2")
       div(i="carbon-sun dark:carbon-moon")
   
-  table.items-wrapper(:style="{height: height+ 'px'}")
-    VirtualList(:data="data")
-      template(v-slot="{item, index}")
+  table.items-wrapper(:style="{height: height + 'px'}")
+    VirtualList(:data="reversed")
+      template(v-slot="{item}")
         tr 
-          td {{index}}
           td {{item.ts}}
           td {{item.event_type}}
           td {{item.data1}}
@@ -83,17 +71,21 @@ div.h-screen.overflow-hidden
 
 <style lang="sass">
 
-
 .dark body 
   background: var(--dark-bg) !important
 
 .items-wrapper
   width: 100%
-  height: calc(100% - 70px)
 
-.item-container 
+.item-container
   height: 40px
-  
+
+th, td
+  padding: 2px
+
+tr:nth-child(even) 
+  background-color: #f2f2f2
+
 .root
   max-height: 100vh
 </style>
