@@ -11,7 +11,6 @@
       :style="`height: ${scrollHeight}px;padding-top: ${paddingTop}px`"
     >
       <tr
-        class="vue3-virtual-list-item-container"
         v-for="item in pool"
         :key="item[dataKey]"
         :style="`height: ${itemSize}px`"

@@ -59,10 +59,10 @@ div.h-screen.overflow-hidden
   div.items-wrapper(:style="{height: height + 'px'}")
     vlist(:data="reversed")
       template.item-container(v-slot="{item}")
-        td {{item.ts}}
-        td {{item.event_type}}
-        td {{item.data1}}
-        td {{item.data2}}
+        div {{item.ts}}
+        div {{item.event_type}}
+        div {{item.data1}}
+        div {{item.data2}}
 
     
 </template>
