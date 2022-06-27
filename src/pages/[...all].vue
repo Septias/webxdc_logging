@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import type { ReceivedStatusUpdate } from 'webxdc'
 import { stump_data } from '~/stump'
 import { toggleDark } from '~/composables/dark'
-import { VirtualList } from 'vue3-virtual-list';
 
 const data = ref([] as LogData[])
 
@@ -38,7 +37,7 @@ onMounted(() => {
 
   // add stump data in dev
   if (import.meta.env.DEV) {
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 1; i++) {
       stump_data.forEach((row) => {
         data.value.push(row.payload)
       })
@@ -57,14 +56,13 @@ div.h-screen.overflow-hidden
     button(@click="() => toggleDark()" key="2")
       div(i="carbon-sun dark:carbon-moon")
   
-  table.items-wrapper(:style="{height: height + 'px'}")
-    VirtualList(:data="reversed")
-      template(v-slot="{item}")
-        tr 
-          td {{item.ts}}
-          td {{item.event_type}}
-          td {{item.data1}}
-          td {{item.data2}}
+  div.items-wrapper(:style="{height: height + 'px'}")
+    vlist(:data="reversed")
+      template.item-container(v-slot="{item}")
+        td {{item.ts}}
+        td {{item.event_type}}
+        td {{item.data1}}
+        td {{item.data2}}
 
     
 </template>
