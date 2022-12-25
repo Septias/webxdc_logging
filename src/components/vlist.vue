@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { ref, toRefs, defineComponent, onMounted, watch } from "vue";
+import { ref, toRefs, defineComponent, onMounted, watch, Ref } from "vue";
 
 interface Props {
   data: any[];
@@ -48,15 +48,14 @@ export default defineComponent({
     },
     poolBuffer: {
       type: Number,
-      default: () => 50
+      default: () => 30
     }
   },
   setup(props: Props): any {
     const { data, poolBuffer, itemSize } = toRefs(props);
-    const root = ref<HTMLElement | null>(null);
+    const root = ref<HTMLElement>() as Ref<HTMLElement>;
     const pool = ref<any[]>([]);
     const scrollHeight = ref(data.value.length * itemSize.value);
-
     watch(data, cData => {
       scrollHeight.value = cData.length * itemSize.value;
     });
@@ -70,13 +69,11 @@ export default defineComponent({
     let isScrollBusy = false;
 
     const handleScroll = () => {
-      if (!root.value) return;
       if (isScrollBusy) return;
       isScrollBusy = true;
 
       requestAnimationFrame(() => {
         isScrollBusy = false;
-        if (!root.value) return;
         const range: number[] = [];
         range[0] =
           Math.floor(root.value.scrollTop / itemSize.value) -
@@ -93,9 +90,7 @@ export default defineComponent({
         paddingTop.value = range[0] * itemSize.value;
       });
     };
-
     onMounted(() => {
-      if (!root.value) return;
       containerSize = root.value.clientHeight;
       const contentLines = Math.ceil(containerSize / itemSize.value);
       const totalLines = contentLines + poolBuffer.value;
@@ -110,18 +105,17 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.vue3-virtual-list-container {
-  width: 100%;
-  height: 100%;
-  min-width: 100px;
-  min-height: 100px;
-  overflow: auto;
-}
-.vue3-virtual-list-scroll {
-  box-sizing: border-box;
-}
-.vue3-virtual-list-item-container {
-  overflow: hidden;
-}
+<style scoped lang="sass">
+.vue3-virtual-list-container 
+  width: 100%
+  height: 100%
+  min-width: 100px
+  min-height: 100px
+  overflow: hidden
+  @apply p-2
+
+.vue3-virtual-list-item-container 
+  overflow: hidden
+
+
 </style>
